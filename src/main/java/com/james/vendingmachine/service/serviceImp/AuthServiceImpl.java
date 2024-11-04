@@ -16,6 +16,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -24,14 +27,22 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final JWTService jwtService;
 
+    private final Map<String, Long> activeSessions = new HashMap<>();
+
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
         User user = userRepository.findByUsername(loginRequest.getUsername());
         if (user == null) {
             throw new UsernameNotFoundException("Invalid username or password.");
         }
+
+        if (activeSessions.containsValue(user.getId())) {
+            throw new RuntimeException("There is already an active session using your account. Please logout to login again.");
+        }
+
         authenticateUser(loginRequest);
         String jwtToken = jwtService.createToken(user);
+        activeSessions.put(jwtToken, user.getId()); // Store the new active session
         return new LoginResponse(jwtToken, "Login successful");
     }
 
@@ -49,12 +60,16 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<String> logout(String token) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !jwtService.isTokenValid(token, (User) authentication.getPrincipal())) {
-            throw new IllegalArgumentException("Invalid or expired token. Logout failed.");
+        if (activeSessions.remove(token) != null) {
+            SecurityContextHolder.clearContext();
+            return ResponseEntity.ok("Logout successful.");
         }
-        jwtService.invalidateToken(token);
-        SecurityContextHolder.clearContext();
-        return ResponseEntity.ok("Logout successful.");
+        return ResponseEntity.badRequest().body("Invalid token. Logout failed.");
+    }
+
+    @Override
+    public ResponseEntity<String> logoutAll(Long userId) {
+        activeSessions.values().removeIf(sessionUserId -> sessionUserId.equals(userId));
+        return ResponseEntity.ok("All active sessions have been terminated.");
     }
 }

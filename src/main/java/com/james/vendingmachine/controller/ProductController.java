@@ -18,7 +18,6 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<Product> createProduct(@RequestBody @Valid ProductRequest productRequest) {
         return productService.createProduct(productRequest);
     }
@@ -29,13 +28,11 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody @Valid ProductRequest productRequest) {
         return productService.updateProduct(id, productRequest);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
         return productService.deleteProduct(id);
     }

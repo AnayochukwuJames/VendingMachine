@@ -4,6 +4,7 @@ import com.james.vendingmachine.exceptionHandler.customException.ProductNotFound
 import com.james.vendingmachine.exceptionHandler.customException.UserAlreadyExistException;
 import com.james.vendingmachine.exceptionHandler.customException.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -53,4 +54,10 @@ public class GlobalExceptionHandler extends RuntimeException {
     public String handleArgumentTypeMismatch(MethodArgumentTypeMismatchException exception){
         return exception.getMessage();
     }
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<String> handleConflict(DataIntegrityViolationException e) {
+        return new ResponseEntity<>("Conflict occurred: " + e.getMessage(), HttpStatus.CONFLICT);
+    }
+
 }

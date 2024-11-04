@@ -8,7 +8,6 @@ import com.james.vendingmachine.service.ProductService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,6 +24,7 @@ public class ProductServiceImp implements ProductService {
 
     @Override
     public ResponseEntity<Product> createProduct(ProductRequest productRequest) {
+        validatePrice(productRequest.getPrice());
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User seller = (User) authentication.getPrincipal();
@@ -44,9 +44,16 @@ public class ProductServiceImp implements ProductService {
 
     @Override
     public ResponseEntity<Product> updateProduct(Long id, ProductRequest productRequest) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProviderNotFoundException("Product not found with ID: " + id));
+        validatePrice(productRequest.getPrice());
 
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ProviderNotFoundException("Product not found with this ID: " + id));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User seller = (User) authentication.getPrincipal();
+        if (!product.getSeller().equals(seller)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         modelMapper.map(productRequest, product);
         Product updatedProduct = productRepository.save(product);
         return ResponseEntity.ok(updatedProduct);
@@ -54,10 +61,22 @@ public class ProductServiceImp implements ProductService {
 
     @Override
     public ResponseEntity<String> deleteProduct(Long id) {
-        if (!productRepository.existsById(id)) {
-            throw new ProviderNotFoundException("Product not found with ID: " + id);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ProviderNotFoundException("Product not found with ID: " + id));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User seller = (User) authentication.getPrincipal();
+        if (!product.getSeller().equals(seller)) {
+            return new ResponseEntity<>("You are not authorized to delete this product", HttpStatus.FORBIDDEN);
         }
+
         productRepository.deleteById(id);
         return new ResponseEntity<>("Product deleted successfully", HttpStatus.OK);
+    }
+
+    private void validatePrice(double price) {
+        if (price < 50 || price % 50 != 0) {
+            throw new IllegalArgumentException("Price must be at least 50 and in multiples of 50");
+        }
     }
 }

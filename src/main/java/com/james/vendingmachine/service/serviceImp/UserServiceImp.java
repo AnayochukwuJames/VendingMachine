@@ -5,16 +5,15 @@ import com.james.vendingmachine.dto.UserResponse;
 import com.james.vendingmachine.exceptionHandler.customException.UserAlreadyExistException;
 import com.james.vendingmachine.exceptionHandler.customException.UserNotFoundException;
 import com.james.vendingmachine.model.User;
-import com.james.vendingmachine.repository.UserRepository;
+import com.james.vendingmachine.repository.UserRepository; // Ensure to import your EmailService
 import com.james.vendingmachine.service.UserService;
-import lombok.*;
+import com.james.vendingmachine.service.serviceImp.Notification.NotificationService;
+import jakarta.mail.MessagingException;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,17 +21,26 @@ public class UserServiceImp implements UserService {
 
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final NotificationService emailService;
 
     @Override
-    public ResponseEntity<UserResponse> createUser(UserRequest userRequest) {
+    public ResponseEntity<UserResponse> createUser(UserRequest userRequest) throws MessagingException {
+        validateUserRequest(userRequest);
+        User user = modelMapper.map(userRequest, User.class);
+        userRepository.save(user);
+        emailService.sendRegistrationNotification(user.getFirstName(), user.getUsername());
+
+        UserResponse userResponse = modelMapper.map(user, UserResponse.class);
+        userResponse.setMessage("Registration successful"); // Set the success message
+
+        return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
+    }
+
+
+    private void validateUserRequest(UserRequest userRequest) {
         if (userRepository.existsByUsername(userRequest.getUsername())) {
             throw new UserAlreadyExistException("User with this username has already been registered");
         }
-
-        User user = modelMapper.map(userRequest, User.class);
-        userRepository.save(user);
-        UserResponse userResponse = modelMapper.map(user, UserResponse.class);
-        return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
     }
 
     @Override
@@ -61,29 +69,4 @@ public class UserServiceImp implements UserService {
         userRepository.deleteById(id);
         return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
     }
-
-    @Override
-    public ResponseEntity<String> deposit(Long userId, Integer amount) {
-        List<Integer> validNotes = Arrays.asList(50, 100, 200, 500, 1000);
-        if (!validNotes.contains(amount)) {
-            return ResponseEntity.badRequest().body("Invalid note value. Valid values are: 50, 100, 200, 500, 1000.");
-        }
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found."));
-
-        user.setBalance(user.getBalance() + amount);
-        userRepository.save(user);
-        return ResponseEntity.ok("Deposit successful. New balance: " + user.getBalance());
-    }
-
-
-    @Override
-    public void resetUser(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found."));
-
-        user.setBalance(0);
-        userRepository.save(user);
-    }
-
 }

@@ -19,18 +19,14 @@ public class UserRequest {
     private String lastName;
 
     @NotBlank(message = "Username is required")
-    @Size(min = 3, max = 15, message = "Username must be between 3 and 15 characters")
+    @Email(message = "Email should be valid")
     private String username;
 
     @NotBlank(message = "Password is required")
     @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email should be valid")
-    private String email;
-
     private double balance;
 
-    private Role role;
+    private String role;
 }
