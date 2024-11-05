@@ -7,17 +7,29 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @ControllerAdvice
 @RequiredArgsConstructor
 public class GlobalExceptionHandler extends RuntimeException {
+
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleMethodArgumentInvalidException(MethodArgumentNotValidException exception){
+        Map<String, String> errorMap = new HashMap<>();
+        exception.getBindingResult().getFieldErrors().forEach(error -> errorMap.put(error.getField(), error.getDefaultMessage()));
+        return errorMap;
+    }
 
     @ExceptionHandler(UserAlreadyExistException.class)
     public ResponseEntity<UserAlreadyExistException> UserAlreadyExistException(UserAlreadyExistException exception){

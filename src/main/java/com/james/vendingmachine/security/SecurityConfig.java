@@ -1,5 +1,6 @@
 package com.james.vendingmachine.security;
 
+import com.james.vendingmachine.model.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,9 +28,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorization -> authorization
                         .requestMatchers( "/api/v1/auth/**", "/api/v1/users/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/v1/product/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/product/**").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/product/**").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/product/**").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/product/**").hasAnyAuthority(Role.SELLER.name())
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/product/**").hasAnyAuthority(Role.SELLER.name())
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/product/**").hasAnyAuthority(Role.SELLER.name())
+                        .requestMatchers(HttpMethod.POST, "/api/v1/purchase/**").hasAnyAuthority(Role.BUYER.name())
+                        .requestMatchers(HttpMethod.GET, "/api/v1/purchase/**").hasAnyAuthority(Role.BUYER.name())
+                        .requestMatchers(HttpMethod.POST, "/api/v1/deposit").hasAnyAuthority(Role.BUYER.name())
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement ->

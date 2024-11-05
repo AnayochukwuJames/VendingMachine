@@ -31,7 +31,7 @@ public class SecurityFilter extends OncePerRequestFilter {
             "/api/v1/users/**",
             "/api/v1/product/**",
             "/api/v1/deposit",
-            "api/v1/**"
+            "/api/v1/purchase/**"
     );
 
     @Override

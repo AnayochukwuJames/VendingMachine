@@ -26,7 +26,7 @@ public class Product {
     @Column(nullable = false)
     private int price;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
 }

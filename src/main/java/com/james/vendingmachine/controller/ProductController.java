@@ -4,7 +4,6 @@ import com.james.vendingmachine.dto.ProductRequest;
 import com.james.vendingmachine.model.Product;
 import com.james.vendingmachine.service.ProductService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
