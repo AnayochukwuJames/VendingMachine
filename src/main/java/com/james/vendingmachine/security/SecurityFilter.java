@@ -62,6 +62,9 @@ public class SecurityFilter extends OncePerRequestFilter {
                         userDetails, null, userDetails.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+                log.info("Authenticated user roles: {}", userDetails.getAuthorities());
+
             } else {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT Token");
                 return;
