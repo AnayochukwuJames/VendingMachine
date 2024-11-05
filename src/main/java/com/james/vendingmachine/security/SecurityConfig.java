@@ -27,9 +27,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorization -> authorization
                         .requestMatchers( "/api/v1/auth/**", "/api/v1/users/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/v1/product/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/products/**").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/products/**").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/products/**").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/product/**").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/product/**").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/product/**").hasRole("SELLER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement ->

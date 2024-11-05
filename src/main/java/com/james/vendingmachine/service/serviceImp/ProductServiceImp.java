@@ -69,12 +69,11 @@ public class ProductServiceImp implements ProductService {
         if (!product.getSeller().equals(seller)) {
             return new ResponseEntity<>("You are not authorized to delete this product", HttpStatus.FORBIDDEN);
         }
-
         productRepository.deleteById(id);
         return new ResponseEntity<>("Product deleted successfully", HttpStatus.OK);
     }
 
-    private void validatePrice(double price) {
+    private void validatePrice(int price) {
         if (price < 50 || price % 50 != 0) {
             throw new IllegalArgumentException("Price must be at least 50 and in multiples of 50");
         }

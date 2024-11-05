@@ -11,13 +11,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("api/v1/products")
+@RequestMapping("/api/v1/product")
 @RequiredArgsConstructor
 public class ProductController {
 
     private final ProductService productService;
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<Product> createProduct(@RequestBody @Valid ProductRequest productRequest) {
         return productService.createProduct(productRequest);
     }

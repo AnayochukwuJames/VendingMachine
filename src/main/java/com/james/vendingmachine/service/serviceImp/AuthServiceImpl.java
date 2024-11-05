@@ -42,7 +42,7 @@ public class AuthServiceImpl implements AuthService {
 
         authenticateUser(loginRequest);
         String jwtToken = jwtService.createToken(user);
-        activeSessions.put(jwtToken, user.getId()); // Store the new active session
+        activeSessions.put(jwtToken, user.getId());
         return new LoginResponse(jwtToken, "Login successful");
     }
 

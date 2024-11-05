@@ -26,7 +26,13 @@ public class SecurityFilter extends OncePerRequestFilter {
     private final JWTService jwtService;
     private final UserDetailsService userDetailsService;
 
-    private static final List<String> PERMITTED_ENDPOINTS = List.of("/api/v1/auth/**", "/api/v1/users/**");
+    private static final List<String> PERMITTED_ENDPOINTS = List.of(
+            "/api/v1/auth/**",
+            "/api/v1/users/**",
+            "/api/v1/product/**",
+            "/api/v1/deposit",
+            "api/v1/**"
+    );
 
     @Override
     protected void doFilterInternal(@Nonnull HttpServletRequest request,

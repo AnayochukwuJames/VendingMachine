@@ -23,7 +23,7 @@ public class PurchaseController {
         return purchaseService.buy(purchaseRequest);
     }
 
-    @PostMapping("/reset")
+    @PostMapping("/reset{id}")
     public ResponseEntity<PurchaseResponse> resetUserBalance(@PathVariable Long userId) {
         return purchaseService.resetBalance(userId);
     }

@@ -24,7 +24,7 @@ public class Product {
     private int quantity;
 
     @Column(nullable = false)
-    private double price;
+    private int price;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id", nullable = false)

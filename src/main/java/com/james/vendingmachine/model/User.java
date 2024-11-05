@@ -37,7 +37,7 @@ public class User implements UserDetails {
 
     @Column(nullable = false)
     private String password;
-    private double balance;
+    private int balance;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -65,7 +65,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return true;
     }
 
 }

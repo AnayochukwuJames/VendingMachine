@@ -20,5 +20,5 @@ public class ProductRequest {
 
     @NotNull(message = "Price is required")
     @Min(value = 50, message = "Price must be at least 50 and in multiples of 50")
-    private double price;
+    private int price;
 }

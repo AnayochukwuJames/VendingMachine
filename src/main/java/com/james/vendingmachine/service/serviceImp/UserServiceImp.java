@@ -5,7 +5,7 @@ import com.james.vendingmachine.dto.UserResponse;
 import com.james.vendingmachine.exceptionHandler.customException.UserAlreadyExistException;
 import com.james.vendingmachine.exceptionHandler.customException.UserNotFoundException;
 import com.james.vendingmachine.model.User;
-import com.james.vendingmachine.repository.UserRepository; // Ensure to import your EmailService
+import com.james.vendingmachine.repository.UserRepository;
 import com.james.vendingmachine.service.UserService;
 import com.james.vendingmachine.service.serviceImp.Notification.NotificationService;
 import jakarta.mail.MessagingException;
@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,16 +23,18 @@ public class UserServiceImp implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final NotificationService emailService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public ResponseEntity<UserResponse> createUser(UserRequest userRequest) throws MessagingException {
         validateUserRequest(userRequest);
+        userRequest.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         User user = modelMapper.map(userRequest, User.class);
         userRepository.save(user);
         emailService.sendRegistrationNotification(user.getFirstName(), user.getUsername());
 
         UserResponse userResponse = modelMapper.map(user, UserResponse.class);
-        userResponse.setMessage("Registration successful"); // Set the success message
+        userResponse.setMessage("Registration successful");
 
         return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
     }
@@ -55,6 +58,7 @@ public class UserServiceImp implements UserService {
     public ResponseEntity<UserResponse> updateUser(Long id, UserRequest userRequest) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
+        userRequest.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         modelMapper.map(userRequest, user);
         User updatedUser = userRepository.save(user);
         UserResponse response = modelMapper.map(updatedUser, UserResponse.class);
