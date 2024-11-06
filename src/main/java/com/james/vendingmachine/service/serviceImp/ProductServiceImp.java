@@ -52,7 +52,6 @@ public class ProductServiceImp implements ProductService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User seller = (User) authentication.getPrincipal();
 
-        // Ensure the authenticated seller is the owner of the product
         if (!product.getSeller().equals(seller)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -69,8 +68,6 @@ public class ProductServiceImp implements ProductService {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User seller = (User) authentication.getPrincipal();
-
-        // Ensure the authenticated seller is the owner of the product
         if (!product.getSeller().equals(seller)) {
             return new ResponseEntity<>("You are not authorized to delete this product", HttpStatus.FORBIDDEN);
         }
