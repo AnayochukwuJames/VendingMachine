@@ -33,7 +33,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/product/**").hasAnyAuthority(Role.SELLER.name())
                         .requestMatchers(HttpMethod.POST, "/api/v1/purchase/**").hasAnyAuthority(Role.BUYER.name())
                         .requestMatchers(HttpMethod.GET, "/api/v1/purchase/**").hasAnyAuthority(Role.BUYER.name())
-                        .requestMatchers(HttpMethod.POST, "/api/v1/deposit**").hasAnyAuthority(Role.BUYER.name())
+                        .requestMatchers(HttpMethod.POST, "/api/v1/deposits/**").hasAnyAuthority(Role.BUYER.name())
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement ->

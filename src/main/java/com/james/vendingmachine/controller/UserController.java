@@ -34,6 +34,10 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
         return userService.deleteUser(id);
+    }
 
+    @GetMapping("email")
+    public String getUserByEmail(@RequestParam String email) {
+        return userService.getUsername(email);
     }
 }

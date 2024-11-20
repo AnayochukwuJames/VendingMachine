@@ -1,5 +1,6 @@
 package com.james.vendingmachine.exceptionHandler;
 
+import com.james.vendingmachine.exceptionHandler.customException.InsufficientBalanceException;
 import com.james.vendingmachine.exceptionHandler.customException.ProductNotFoundException;
 import com.james.vendingmachine.exceptionHandler.customException.UserAlreadyExistException;
 import com.james.vendingmachine.exceptionHandler.customException.UserNotFoundException;
@@ -37,6 +38,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(InsufficientBalanceException.class)
+    public ResponseEntity<String> handleInsufficientBalanceException(InsufficientBalanceException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
 

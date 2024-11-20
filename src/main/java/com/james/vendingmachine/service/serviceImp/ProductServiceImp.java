@@ -51,6 +51,9 @@ public class ProductServiceImp implements ProductService {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User seller = (User) authentication.getPrincipal();
+        System.out.println("Authenticated seller: " + seller.getId());
+        System.out.println("Product seller: " + product.getSeller().getId());
+
 
         if (!product.getSeller().equals(seller)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

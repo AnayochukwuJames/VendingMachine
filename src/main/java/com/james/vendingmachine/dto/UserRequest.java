@@ -1,6 +1,5 @@
 package com.james.vendingmachine.dto;
 
-import com.james.vendingmachine.model.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

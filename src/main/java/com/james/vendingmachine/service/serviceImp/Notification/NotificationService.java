@@ -27,18 +27,29 @@ public class NotificationService {
         try {
             mailSender.send(message);
         } catch (MailException e) {
-            // Log the exception or handle the error as necessary
             System.err.println("Failed to send email: " + e.getMessage());
         }
     }
 
-    public void sendPurchaseNotification(Long userId, Long productId, int quantity, String email) {
+    @Async
+    public void sendPurchaseNotification(Long userId, Long productId, int quantity, String email) throws MessagingException, jakarta.mail.MessagingException {
         String messageText = String.format("User %d purchased %d of product %d", userId, quantity, productId);
 
+        // Send Kafka message
         kafkaTemplate.send("purchase-notifications", messageText);
 
+        // Send email notification if email is provided
         if (email != null && !email.isEmpty()) {
-            sendEmail(email, "Product Purchase Notification", messageText);
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "utf-8");
+            messageHelper.setTo(email);
+            messageHelper.setSubject("Product Purchase Notification");
+            String emailMessage = String.format(
+                    "Hello,\n\nYou have successfully purchased %d units of product %d. Thank you for your purchase!\n\nBest regards,\nVending Machine App",
+                    quantity, productId
+            );
+            messageHelper.setText(emailMessage);
+            mailSender.send(mimeMessage);
         }
     }
 

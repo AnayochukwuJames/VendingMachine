@@ -73,4 +73,13 @@ public class UserServiceImp implements UserService {
         userRepository.deleteById(id);
         return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
     }
+
+    @Override
+    public String getUsername(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user != null) {
+            return user.getUsername();
+        }
+        return null;
+    }
 }

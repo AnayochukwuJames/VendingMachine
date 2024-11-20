@@ -1,11 +1,14 @@
 package com.james.vendingmachine.controller;
 
+import com.james.vendingmachine.dto.DepositRequest;
+import com.james.vendingmachine.dto.DepositResponse;
 import com.james.vendingmachine.dto.PurchaseRequest;
 import com.james.vendingmachine.dto.PurchaseResponse;
+import com.james.vendingmachine.service.DepositService;
 import com.james.vendingmachine.service.PurchaseService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,8 +21,10 @@ public class PurchaseController {
     private final PurchaseService purchaseService;
 
 
+    private final DepositService depositService;
+
     @PostMapping("/buy-product")
-    public PurchaseResponse buyProduct(@RequestBody PurchaseRequest purchaseRequest){
+    public PurchaseResponse buyProduct(@RequestBody PurchaseRequest purchaseRequest) throws MessagingException {
         return purchaseService.buy(purchaseRequest);
     }
 

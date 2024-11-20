@@ -29,8 +29,8 @@ public class SecurityFilter extends OncePerRequestFilter {
     private static final List<String> PERMITTED_ENDPOINTS = List.of(
             "/api/v1/auth/**",
             "/api/v1/users/**",
+            "/api/v1/deposits/**",
             "/api/v1/product/**",
-            "/api/v1/deposit/**",
             "/api/v1/purchase/**"
     );
 

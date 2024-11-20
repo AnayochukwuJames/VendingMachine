@@ -14,4 +14,5 @@ public interface UserService {
 
     ResponseEntity<String> deleteUser(Long id);
 
+    String getUsername(String username);
 }

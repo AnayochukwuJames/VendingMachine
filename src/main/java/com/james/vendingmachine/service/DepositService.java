@@ -1,7 +1,8 @@
 package com.james.vendingmachine.service;
 
+import com.james.vendingmachine.dto.DepositResponse;
 import org.springframework.http.ResponseEntity;
 
 public interface DepositService {
-    ResponseEntity<String> deposit(Long userId, Integer amount);
+    ResponseEntity<DepositResponse> deposit(Long userId, Integer amount);
 }

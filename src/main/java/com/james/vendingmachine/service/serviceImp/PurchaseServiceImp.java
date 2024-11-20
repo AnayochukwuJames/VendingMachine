@@ -8,6 +8,7 @@ import com.james.vendingmachine.repository.ProductRepository;
 import com.james.vendingmachine.repository.UserRepository;
 import com.james.vendingmachine.service.PurchaseService;
 import com.james.vendingmachine.service.serviceImp.Notification.NotificationService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +32,7 @@ public class PurchaseServiceImp implements PurchaseService {
     private final NotificationService emailService;
 
     @Override
-    @Transactional
-    public PurchaseResponse buy(PurchaseRequest purchaseRequest) {
+    public PurchaseResponse buy(PurchaseRequest purchaseRequest) throws MessagingException {
         validatePurchaseRequest(purchaseRequest);
 
         User user = getAuthenticatedUser();
@@ -47,7 +47,7 @@ public class PurchaseServiceImp implements PurchaseService {
         emailService.sendPurchaseNotification(user.getId(), product.getId(), purchaseRequest.getQuantity(), user.getUsername());
 
         List<Integer> change = calculateChange((int) user.getBalance());
-        return new PurchaseResponse("Purchase successful.", totalCost, product, change);
+        return new PurchaseResponse("Product purchase successful.", totalCost, product, change);
     }
 
     private void validatePurchaseRequest(PurchaseRequest purchaseRequest) {

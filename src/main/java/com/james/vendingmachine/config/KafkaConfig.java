@@ -1,17 +1,22 @@
 package com.james.vendingmachine.config;
 
+import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
+
 @Configuration
 @EnableKafka
 public class KafkaConfig {
+
+    public static final String PRODUCT_SOLD = "product-sold";
 
     @Bean
     public KafkaTemplate<String, String> kafkaTemplate() {
@@ -42,5 +47,12 @@ public class KafkaConfig {
         configProps.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         configProps.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         return new DefaultKafkaConsumerFactory<>(configProps);
+    }
+
+    @Bean
+    public NewTopic topic() {
+        return TopicBuilder
+                .name(PRODUCT_SOLD)
+                .build();
     }
 }
